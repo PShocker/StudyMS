@@ -7,9 +7,7 @@ var json=JSON.parse_string(file.get_as_text())
 	#print(json['Layers'][0]['Tiles'])
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
-	var camera2d=Camera2D.new()
-	add_child(camera2d)
+func _ready():	
 	var i=0
 	for layers in json['Layers']:
 		if layers['Tiles']!=null:
@@ -20,12 +18,37 @@ func _ready():
 				node.set_position(Vector2(tile['X'], tile['Y']))
 				node.set_offset(Vector2(-tile['Resource']['OriginX'], -tile['Resource']['OriginY']))
 				node.set_z_index(composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
-				camera2d.add_child(node)
+				add_child(node)
 		i=i+1
-	pass # Replace with function body.
+	
 	var staticBody2D=StaticBody2D.new()
+	for foothold in json['FootHold']:
+		if foothold!=null:
+			var segmentShape2D=SegmentShape2D.new()
+			segmentShape2D.set_a(Vector2(foothold['X1'],foothold['Y1']))
+			segmentShape2D.set_b(Vector2(foothold['X2'],foothold['Y2']))
+			var collisionShape2D=CollisionShape2D.new()
+			collisionShape2D.set_shape(segmentShape2D)
+			staticBody2D.add_child(collisionShape2D)
+			#camera2d.add_child(node)
+				
+	add_child(staticBody2D)
+	
+	var characterBody2D=CharacterBody2D.new()
+	characterBody2D.set_floor_snap_length(20)
+	var sprite=Sprite2D.new()
+	sprite.set_texture(load("res://icon.svg"))
 	var collisionShape2D=CollisionShape2D.new()
-	staticBody2D.
+	var rectangleShape2D=RectangleShape2D.new()
+	rectangleShape2D.set_size(Vector2(128,128))
+	collisionShape2D.set_shape(rectangleShape2D)
+	var camera2d=Camera2D.new()
+	characterBody2D.add_child(sprite)
+	characterBody2D.add_child(collisionShape2D)
+	characterBody2D.add_child(camera2d)
+	characterBody2D.set_script(load("res://Player/Player.gd"))
+	add_child(characterBody2D)
+	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
