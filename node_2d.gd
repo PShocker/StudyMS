@@ -1,15 +1,17 @@
 extends Node2D
 
-
+var camera:Camera2D;
 var fileName="Map/Map/Map0/000010000.json"
 var file=FileAccess.open(fileName,FileAccess.READ)
 var json=JSON.parse_string(file.get_as_text())
 	#print(json['Layers'][0]['Tiles'])
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	var i=0
-	for layers in json['Layers']:
+	camera=get_viewport().get_camera_2d()
+	for i in range(0,json['Layers'].size()):
+		var layers=json['Layers'][i]
 		if layers['Tiles']!=null:
 			for tile in layers['Tiles']:
 				var node = Sprite2D.new()
@@ -19,7 +21,13 @@ func _ready():
 				node.set_offset(Vector2(-tile['Resource']['OriginX'], -tile['Resource']['OriginY']))
 				node.set_z_index(composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
 				add_child(node)
-		i=i+1
+	
+	for i in range(0,json['Layers'].size()):
+		var layers=json['Layers'][i]
+		if layers['Objs']!=null:
+			for obj in layers['Objs']:
+				var o=Objs.new(self,obj)
+			
 	
 	var staticBody2D=StaticBody2D.new()
 	for foothold in json['FootHold']:
