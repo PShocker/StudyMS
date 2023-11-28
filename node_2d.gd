@@ -9,30 +9,6 @@ var json=JSON.parse_string(file.get_as_text())
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	camera=get_viewport().get_camera_2d()
-	for i in range(0,json['Layers'].size()):
-		var layers=json['Layers'][i]
-		if layers['Tiles']!=null:
-			for tile in layers['Tiles']:
-				var node = Sprite2D.new()
-				node.set_texture(load("res://"+tile['Resource']['ResourceUrl']))
-				node.set_centered(false)
-				node.set_position(Vector2(tile['X'], tile['Y']))
-				node.set_offset(Vector2(-tile['Resource']['OriginX'], -tile['Resource']['OriginY']))
-				node.set_z_index(composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
-				#add_child(node)
-	
-	for i in range(0,json['Layers'].size()):
-		var layers=json['Layers'][i]
-		if layers['Objs']!=null:
-			for obj in layers['Objs']:
-				var o=Objs.new(self,obj)
-				
-	for i in range(0,json['Backs'].size()):
-		var backs=json['Backs'][i]
-		if backs!=null:
-			var b=Backs.new(self,backs)
-				
 	var staticBody2D=StaticBody2D.new()
 	for foothold in json['FootHold']:
 		if foothold!=null:
@@ -43,7 +19,7 @@ func _ready():
 			collisionShape2D.set_shape(segmentShape2D)
 			staticBody2D.add_child(collisionShape2D)
 			#camera2d.add_child(node)
-				
+			
 	add_child(staticBody2D)
 	
 	var characterBody2D=CharacterBody2D.new()
@@ -60,6 +36,29 @@ func _ready():
 	characterBody2D.add_child(camera2d)
 	characterBody2D.set_script(load("res://Player/Player.gd"))
 	add_child(characterBody2D)
+	
+	for i in range(0,json['Layers'].size()):
+		var layers=json['Layers'][i]
+		if layers['Tiles']!=null:
+			for tile in layers['Tiles']:
+				var node = Sprite2D.new()
+				node.set_texture(load("res://"+tile['Resource']['ResourceUrl']))
+				node.set_centered(false)
+				node.set_position(Vector2(tile['X'], tile['Y']))
+				node.set_offset(Vector2(-tile['Resource']['OriginX'], -tile['Resource']['OriginY']))
+				node.set_z_index(composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
+				add_child(node)
+	
+	for i in range(0,json['Layers'].size()):
+		var layers=json['Layers'][i]
+		if layers['Objs']!=null:
+			for obj in layers['Objs']:
+				var o=Objs.new(self,obj)
+	
+	for i in range(0,json['Backs'].size()):
+		var backs=json['Backs'][i]
+		if backs!=null:
+			var b=Backs.new(self,backs)
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
