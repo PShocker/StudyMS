@@ -69,7 +69,8 @@ func _init(parent,backs):
 				'auto_scroll_y': true,
 			}
 	#初始化type后
-	
+	var view = parent.get_viewport().get_camera_2d()
+	print(view)
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
