@@ -29,10 +29,10 @@ func get_input():
 		velocity.y = 11
 	if right:
 		change_state(RUN)
-		velocity.x += 200
+		velocity.x += 400
 	if left:
 		change_state(RUN)
-		velocity.x -= 200
+		velocity.x -= 400
 	if !right and !left and state == RUN:
 		change_state(IDLE)
 
@@ -42,7 +42,7 @@ func _process(delta):
 		anim = new_anim
 
 func _physics_process(delta):
-	velocity.y += 100 * delta
+	velocity.y += 200 * delta
 	if state == JUMP:
 		if is_on_floor():
 			change_state(IDLE)

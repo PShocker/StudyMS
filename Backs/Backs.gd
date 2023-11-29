@@ -16,6 +16,9 @@ var _width
 var _height
 var _size
 
+var _position_offset_x = 0;
+var _position_offset_y = 0;
+	
 var _draw_info={}
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -83,7 +86,7 @@ func _init(parent,backs):
 		}
 	#初始化type后
 	var layerNode=CanvasLayer.new()
-	layerNode.layer=backs['ID']-7
+	layerNode.layer=backs['ID']-100
 #	layerNode.layer=-1
 	parent.add_child(layerNode)
 	layerNode.add_child(self)
@@ -101,35 +104,39 @@ func _init(parent,backs):
 	_rx=backs['Rx']
 	_ry=backs['Ry']
 	_position=Vector2(_x,_y)
-	_offset=Vector2(_backs['Resource']['OriginX'],_backs['Resource']['OriginY'])
+	_offset=Vector2(-_backs['Resource']['OriginX'],-_backs['Resource']['OriginY'])
 	_size=Vector2(_width,_height)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	var camera = self.get_viewport().get_camera_2d()
+	var camera = get_viewport().get_camera_2d()
 	var viewport_center = camera.get_screen_center_position() if camera != null else Vector2()
 	var viewport_rect_left = viewport_center.x - get_viewport_rect().size.x / 2
 	var viewport_rect_top = viewport_center.y - get_viewport_rect().size.y / 2
 	var viewport_rect_right = viewport_center.x + get_viewport_rect().size.x / 2
 	var viewport_rect_bottom = viewport_center.y + get_viewport_rect().size.y / 2
-	var position_offset_x = 0;
-	var position_offset_y = 0;
+	
+#	var position_offset_x = 0;
+#	var position_offset_y = 0;
+
 	if _tilemode['auto_scroll_x'] == true :
-		position_offset_x += (_rx  * 5.0 * delta)
-		position_offset_x = position_offset_x - floor(position_offset_x / _cx) * _cx
+		_position_offset_x += (_rx  * 5.0 * delta)
+		_position_offset_x -= floor(_position_offset_x / _cx) * _cx
+#		_position_offset_x = int(_position_offset_x) %_cx
 	else:
-		position_offset_x = (viewport_center.x - 0) * (_rx + 100) / 100.0
+		_position_offset_x = (viewport_center.x - 0) * (_rx + 100) / 100.0
 		
 	if _tilemode['auto_scroll_y'] == true :
-		position_offset_y += (_ry  * 5.0 * delta)
-		position_offset_y = position_offset_y - floor(position_offset_y / _cy) * _cy
+		_position_offset_y += (_ry  * 5.0 * delta)
+		_position_offset_y -= floor(_position_offset_y / _cy) * _cy
+#		_position_offset_y = int(_position_offset_y) %_cy
 	else:
-		position_offset_y = (viewport_center.y - 0) * (_ry + 100) / 100.0
+		_position_offset_y = (viewport_center.y - 0) * (_ry + 100) / 100.0
 	
-	var base_position = Vector2(_x + position_offset_x, _y + position_offset_y)
-	
-	var sprite_rect = Rect2(_position-_offset,_size)
+	var base_position = Vector2(_x + _position_offset_x, _y + _position_offset_y)
+	print(str(_position_offset_y)+" id:"+str(_backs['ID']))
+	var sprite_rect = Rect2(_offset,_size)
 	var sprite_rect_right = sprite_rect.position.x + sprite_rect.size.x
 	var sprite_rect_bottom = sprite_rect.position.y + sprite_rect.size.y
 	var tile_cnt_x = 1
@@ -150,6 +157,7 @@ func _process(delta):
 		else:
 			tile_cnt_x = ceil((viewport_rect_right - tile_start_left) / float(_cx))
 			base_position.x = tile_start_left - sprite_rect.position.x
+#			
 			
 	if _tilemode['tile_y']==true and _cy > 0:
 		tile_start_bottom = int(base_position.y + sprite_rect_bottom - viewport_rect_top) % _cy
@@ -180,14 +188,15 @@ func _draw():
 		
 	for j in range(_draw_info.tile_cnt_y):
 		for i in range(_draw_info.tile_cnt_x):
-			var tile_position := Vector2(_draw_info.base_position.x + i * _cx, _draw_info.base_position.y + j * _cy)
+			var tile_position = Vector2(_draw_info.base_position.x + i * _cx, _draw_info.base_position.y + j * _cy)
 			if _draw_info.flip:
 				tile_position.x = tile_position.x * -1
 				self.draw_set_transform(Vector2.ZERO, _draw_info.angle, Vector2(-1, 1))
 			else:
 				self.draw_set_transform(Vector2.ZERO, _draw_info.angle, Vector2(1, 1))
 				
-			tile_position = tile_position - _draw_info.offset
+			tile_position = tile_position + _draw_info.offset
+#			tile_position += Vector2(800,100)
 			draw_texture(_texture, tile_position)
 
 	
