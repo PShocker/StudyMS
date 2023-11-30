@@ -61,7 +61,7 @@ func _ready():
 		var layers=json['Layers'][i]
 		if layers['Objs']!=null:
 			for obj in layers['Objs']:
-				var o=Objs.new(self,obj)
+				var o=Objs.new(self,obj,i)
 				pass
 	
 	var layerNode=CanvasLayer.new()

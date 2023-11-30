@@ -12,7 +12,7 @@ func sprite_frames_changed():
 func _ready():
 	pass
 		
-func _init(parent,obj):
+func _init(parent,obj,i):
 	var frames=obj['Resource']['Frames']
 	var animatedSprite2D=AnimatedSprite2D.new()
 	var node = Sprite2D.new()
@@ -23,6 +23,7 @@ func _init(parent,obj):
 	animatedSprite2D.set_sprite_frames(spriteFrames)
 	animatedSprite2D.set_position(Vector2(obj['X'], obj['Y']))
 	animatedSprite2D.set_centered(false)
+	animatedSprite2D.set_z_index(composite_zindex(i,obj['Resource']['Z'],obj['ID'],0))
 	animatedSprite2D.play()
 	animatedSprite2D.connect("frame_changed", sprite_frames_changed)
 	_animatedSprite2D=animatedSprite2D
