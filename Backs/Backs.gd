@@ -87,7 +87,7 @@ func _init(parent,backs):
 	#初始化type后
 	var layerNode=CanvasLayer.new()
 	layerNode.layer=backs['ID']-100
-#	layerNode.layer=-1
+	layerNode.set_follow_viewport(true)
 	parent.add_child(layerNode)
 	layerNode.add_child(self)
 	_texture=load("res://"+_backs['Resource']['ResourceUrl'])
@@ -117,9 +117,6 @@ func _process(delta):
 	var viewport_rect_right = viewport_center.x + get_viewport_rect().size.x / 2
 	var viewport_rect_bottom = viewport_center.y + get_viewport_rect().size.y / 2
 	
-#	var position_offset_x = 0;
-#	var position_offset_y = 0;
-
 	if _tilemode['auto_scroll_x'] == true :
 		_position_offset_x += (_rx  * 5.0 * delta)
 		_position_offset_x -= floor(_position_offset_x / _cx) * _cx
@@ -135,7 +132,7 @@ func _process(delta):
 		_position_offset_y = (viewport_center.y - 0) * (_ry + 100) / 100.0
 	
 	var base_position = Vector2(_x + _position_offset_x, _y + _position_offset_y)
-	print(str(_position_offset_y)+" id:"+str(_backs['ID']))
+	
 	var sprite_rect = Rect2(_offset,_size)
 	var sprite_rect_right = sprite_rect.position.x + sprite_rect.size.x
 	var sprite_rect_bottom = sprite_rect.position.y + sprite_rect.size.y
@@ -185,7 +182,8 @@ func _process(delta):
 func _draw():
 	if _draw_info == {}:
 		return
-		
+#	print(_draw_info.tile_cnt_y)
+	
 	for j in range(_draw_info.tile_cnt_y):
 		for i in range(_draw_info.tile_cnt_x):
 			var tile_position = Vector2(_draw_info.base_position.x + i * _cx, _draw_info.base_position.y + j * _cy)
@@ -196,7 +194,6 @@ func _draw():
 				self.draw_set_transform(Vector2.ZERO, _draw_info.angle, Vector2(1, 1))
 				
 			tile_position = tile_position + _draw_info.offset
-#			tile_position += Vector2(800,100)
 			draw_texture(_texture, tile_position)
 
 	

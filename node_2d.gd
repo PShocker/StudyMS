@@ -31,6 +31,7 @@ func _ready():
 	rectangleShape2D.set_size(Vector2(128,128))
 	collisionShape2D.set_shape(rectangleShape2D)
 	var camera2d=Camera2D.new()
+	camera2d.set_position_smoothing_enabled(true)
 	characterBody2D.add_child(sprite)
 	characterBody2D.add_child(collisionShape2D)
 	characterBody2D.add_child(camera2d)

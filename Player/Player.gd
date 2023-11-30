@@ -26,13 +26,13 @@ func get_input():
 
 	if jump and is_on_floor():
 		change_state(JUMP)
-		velocity.y = 11
+		velocity.y = 200
 	if right:
 		change_state(RUN)
-		velocity.x += 400
+		velocity.x += 200
 	if left:
 		change_state(RUN)
-		velocity.x -= 400
+		velocity.x -= 200
 	if !right and !left and state == RUN:
 		change_state(IDLE)
 
