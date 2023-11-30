@@ -29,10 +29,10 @@ func get_input():
 		velocity.y = 200
 	if right:
 		change_state(RUN)
-		velocity.x += 200
+		velocity.x += 400
 	if left:
 		change_state(RUN)
-		velocity.x -= 200
+		velocity.x -= 400
 	if !right and !left and state == RUN:
 		change_state(IDLE)
 
