@@ -38,6 +38,8 @@ func _ready():
 	characterBody2D.set_script(load("res://Player/Player.gd"))
 	add_child(characterBody2D)
 	
+	var limit_left = 0 #Tile左边界
+	var limit_right = 0 #Tile右边界
 	for i in range(0,json['Layers'].size()):
 		var layers=json['Layers'][i]
 		if layers['Tiles']!=null:
@@ -48,7 +50,12 @@ func _ready():
 				node.set_position(Vector2(tile['X'], tile['Y']))
 				node.set_offset(Vector2(-tile['Resource']['OriginX'], -tile['Resource']['OriginY']))
 				node.set_z_index(composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
+				limit_left = min(tile['X']-tile['Resource']['OriginX'], limit_left)
+				limit_right = max(tile['X']-tile['Resource']['OriginX'], limit_right)
 				add_child(node)
+				
+	camera2d.limit_left=limit_left
+	camera2d.limit_right=limit_right
 	
 	for i in range(0,json['Layers'].size()):
 		var layers=json['Layers'][i]
