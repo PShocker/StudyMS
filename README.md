@@ -1,5 +1,5 @@
 # StudyMS
-用godot引擎复刻冒险岛,欢迎大家提交PR
+用godot引擎复刻冒险岛(MapleStory),欢迎大家提交PR
 目前已实现
 - [✓] 解析地图json文件
 - [✓] 加载地图
