@@ -22,11 +22,11 @@ func get_input():
 	velocity.x = 0
 	var right = Input.is_action_pressed('ui_right')
 	var left = Input.is_action_pressed('ui_left')
-	var jump = Input.is_action_just_pressed('ui_select')
+	var jump = Input.is_action_just_pressed('ui_left_alt')
 
 	if jump and is_on_floor():
 		change_state(JUMP)
-		velocity.y = 200
+		velocity.y += -200
 	if right:
 		change_state(RUN)
 		velocity.x += 400
