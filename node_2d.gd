@@ -49,7 +49,7 @@ func _ready():
 				node.set_centered(false)
 				node.set_position(Vector2(tile['X'], tile['Y']))
 				node.set_offset(Vector2(-tile['Resource']['OriginX'], -tile['Resource']['OriginY']))
-				node.set_z_index(composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
+				node.set_z_index(Common.composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
 				limit_left = min(tile['X']-tile['Resource']['OriginX'], limit_left)
 				limit_right = max(tile['X']-tile['Resource']['OriginX'], limit_right)
 				add_child(node)
@@ -75,16 +75,3 @@ func _ready():
 func _process(delta):
 	pass
 
-
-func normalize(z):
-	var scale = 16;
-	z = z+ scale/2
-	z = max(0, min(z, scale - 1));
-	return z;
-
-func composite_zindex(z, z0, z1, z2):
-	var scale = 16
-	return ((normalize(z) * scale * scale * scale
-		+ normalize(z0) * scale * scale
-		+ normalize(z1) * scale
-		+ normalize(z2)))/100;
