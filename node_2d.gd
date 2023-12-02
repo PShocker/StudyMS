@@ -3,39 +3,44 @@ extends Node2D
 var camera:Camera2D;
 var fileName="Map/Map/Map0/000010000.json"
 var file=FileAccess.open(fileName,FileAccess.READ)
+#var json
 var json=JSON.parse_string(file.get_as_text())
-	#print(json['Layers'][0]['Tiles'])
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	print("当前wz版本是:"+str(Wz.Test()))
+	#json=JSON.parse_string(Wz.Test())
+	print(Wz.Test()) #调用wz的dll解析
 	var limit_left = 0 #Tile左边界
 	var limit_right = 0 #Tile右边界
-	var staticBody2D=StaticBody2D.new()
-	#创建FootHold
-	for foothold in json['FootHold']:
-		if foothold!=null:
+	#创建FootHold,不用判断非空,因为地图是一定有fh
+	for mapFootHold in json['FootHolds']:
+		var layer=mapFootHold['Layer']
+		var staticBody2D=StaticBody2D.new()
+		for foothold in mapFootHold['FootHolds']:
 			var segmentShape2D=SegmentShape2D.new()
 			segmentShape2D.set_a(Vector2(foothold['X1'],foothold['Y1']))
 			segmentShape2D.set_b(Vector2(foothold['X2'],foothold['Y2']))
 			var collisionShape2D=CollisionShape2D.new()
 			collisionShape2D.set_shape(segmentShape2D)
-			#staticBody2D.set_meta("layer",foothold['Layer'])
+			staticBody2D.set_meta("layer",layer)
 			staticBody2D.add_child(collisionShape2D)
 			limit_left = min(foothold['X1'], foothold['X2'],limit_left)
 			limit_right = max(foothold['X1'], foothold['X2'], limit_right)
+		add_child(staticBody2D)
 			
 	#地图左右边界
 	for i in [limit_left,limit_right]:
+		var staticBody2D=StaticBody2D.new()
 		var segmentShape2D=SegmentShape2D.new()
 		segmentShape2D.set_a(Vector2(i,-10000000))
 		segmentShape2D.set_b(Vector2(i,10000000))
 		var collisionShape2D=CollisionShape2D.new()
 		collisionShape2D.set_shape(segmentShape2D)
-		staticBody2D.add_child(collisionShape2D)
+		staticBody2D.add_child(collisionShape2D)		
+		add_child(staticBody2D)
 	
-	add_child(staticBody2D)
+	
 	#生成人物
 	var characterBody2D=CharacterBody2D.new()
 	characterBody2D.set_floor_snap_length(20)

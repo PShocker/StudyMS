@@ -4,6 +4,7 @@ enum {IDLE, RUN, JUMP}
 var state
 var anim
 var new_anim
+var layer
 
 func _ready():
 	change_state(IDLE)
@@ -49,5 +50,9 @@ func _physics_process(delta):
 	if move_and_slide()==true:
 		for i in get_slide_collision_count():
 			var collision = get_slide_collision(i).get_collider()
-			#print("I collided with ", collision)
+			var layer=collision.get_meta("layer","")
+			if str(layer) != "":#当碰撞体无layer时
+				set_z_index(Common.composite_zindex(layer,0,0,0))
+				print("I collided with ", layer)
+			
 
