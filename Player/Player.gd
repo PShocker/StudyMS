@@ -22,11 +22,11 @@ func get_input():
 	velocity.x = 0
 	var right = Input.is_action_pressed('ui_right')
 	var left = Input.is_action_pressed('ui_left')
-	var jump = Input.is_action_just_pressed('ui_left_alt')
+	var jump = Input.is_action_pressed('ui_left_alt')
 
 	if jump and is_on_floor():
 		change_state(JUMP)
-		velocity.y += -200
+		velocity.y += -400
 	if right:
 		change_state(RUN)
 		velocity.x += 400
@@ -42,9 +42,12 @@ func _process(delta):
 		anim = new_anim
 
 func _physics_process(delta):
-	velocity.y += 200 * delta
+	velocity.y += 600 * delta
 	if state == JUMP:
 		if is_on_floor():
 			change_state(IDLE)
-	move_and_slide()
+	if move_and_slide()==true:
+		for i in get_slide_collision_count():
+			var collision = get_slide_collision(i).get_collider()
+			#print("I collided with ", collision)
 

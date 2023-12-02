@@ -9,6 +9,7 @@ var json=JSON.parse_string(file.get_as_text())
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
+	print("当前wz版本是:"+str(Wz.Test()))
 	var limit_left = 0 #Tile左边界
 	var limit_right = 0 #Tile右边界
 	var staticBody2D=StaticBody2D.new()
@@ -20,6 +21,7 @@ func _ready():
 			segmentShape2D.set_b(Vector2(foothold['X2'],foothold['Y2']))
 			var collisionShape2D=CollisionShape2D.new()
 			collisionShape2D.set_shape(segmentShape2D)
+			#staticBody2D.set_meta("layer",foothold['Layer'])
 			staticBody2D.add_child(collisionShape2D)
 			limit_left = min(foothold['X1'], foothold['X2'],limit_left)
 			limit_right = max(foothold['X1'], foothold['X2'], limit_right)
