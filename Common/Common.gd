@@ -1,5 +1,13 @@
 extends Node
 
+const ALL_MASK=pow(2,32)-1
+
+enum FootHoldType{
+	UP = 0,
+	DOWN = 1,
+	LEFT = 2,
+	RIGHT = 3,
+}
 
 func normalize(z):
 	var scale = 16;

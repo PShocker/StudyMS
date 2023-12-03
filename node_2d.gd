@@ -10,34 +10,30 @@ var json=JSON.parse_string(file.get_as_text())
 # Called when the node enters the scene tree for the first time.
 func _ready():	
 	#json=JSON.parse_string(Wz.Test())
-	print(Wz.Test()) #调用wz的dll解析
+	#print(Wz.Test()) #调用wz的dll解析
 	var limit_left = 0 #Tile左边界
 	var limit_right = 0 #Tile右边界
 	#创建FootHold,不用判断非空,因为地图是一定有fh
 	for mapFootHold in json['FootHolds']:
 		var layer=mapFootHold['Layer']
-		var staticBody2D=StaticBody2D.new()
 		for foothold in mapFootHold['FootHolds']:
-			var segmentShape2D=SegmentShape2D.new()
-			segmentShape2D.set_a(Vector2(foothold['X1'],foothold['Y1']))
-			segmentShape2D.set_b(Vector2(foothold['X2'],foothold['Y2']))
-			var collisionShape2D=CollisionShape2D.new()
-			collisionShape2D.set_shape(segmentShape2D)
-			staticBody2D.set_meta("layer",layer)
-			staticBody2D.add_child(collisionShape2D)
-			limit_left = min(foothold['X1'], foothold['X2'],limit_left)
-			limit_right = max(foothold['X1'], foothold['X2'], limit_right)
-		add_child(staticBody2D)
-			
+			FootHolds.new(self,foothold,layer)
+	limit_left=FootHolds.limit_left
+	limit_right=FootHolds.limit_right
 	#地图左右边界
 	for i in [limit_left,limit_right]:
 		var staticBody2D=StaticBody2D.new()
+		staticBody2D.set_meta("type","wall")
 		var segmentShape2D=SegmentShape2D.new()
 		segmentShape2D.set_a(Vector2(i,-10000000))
 		segmentShape2D.set_b(Vector2(i,10000000))
 		var collisionShape2D=CollisionShape2D.new()
 		collisionShape2D.set_shape(segmentShape2D)
-		staticBody2D.add_child(collisionShape2D)		
+		staticBody2D.add_child(collisionShape2D)
+		staticBody2D.collision_mask=0
+		staticBody2D.collision_layer=0
+		staticBody2D.collision_mask=Common.ALL_MASK
+		staticBody2D.collision_layer=Common.ALL_MASK
 		add_child(staticBody2D)
 	
 	
@@ -46,9 +42,10 @@ func _ready():
 	characterBody2D.set_floor_snap_length(20)
 	var sprite=Sprite2D.new()
 	sprite.set_texture(load("res://icon.svg"))
+	sprite.set_scale(Vector2(0.25,0.25))
 	var collisionShape2D=CollisionShape2D.new()
 	var rectangleShape2D=RectangleShape2D.new()
-	rectangleShape2D.set_size(Vector2(128,128))
+	rectangleShape2D.set_size(Vector2(32,32))
 	collisionShape2D.set_shape(rectangleShape2D)
 	var camera2d=Camera2D.new()
 	camera2d.set_position_smoothing_enabled(true)
