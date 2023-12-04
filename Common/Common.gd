@@ -1,6 +1,5 @@
 extends Node
 
-const ALL_MASK=pow(2,32)-1
 
 func normalize(z):
 	var scale = 16;

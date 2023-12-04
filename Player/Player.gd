@@ -1,18 +1,17 @@
 extends Node2D
 
 class_name Player;
-enum {IDLE, RUN, JUMP}
-var state
-var anim
-var new_anim
-var layer
-var timer
 var _foothold
 var _player
 
 var _down_jump_flag=false
 
+
 const PLAYER_VELOCITY_X=400
+const PLAYER_WIDTH=32
+const PLAYER_HEIGHT=32
+const PLAYER_DOWN_JUMP_HEIGHT=40
+
 
 func body_exited(body: Node2D):
 	_down_jump_flag=false
@@ -22,7 +21,8 @@ func init_area(_player):
 	var area2D=Area2D.new()
 	var collisionShape2D=CollisionShape2D.new()
 	var rectangleShape2D=RectangleShape2D.new()
-	rectangleShape2D.set_size(Vector2(32,48))
+	area2D.set_position(Vector2(0,(PLAYER_DOWN_JUMP_HEIGHT-PLAYER_HEIGHT)/2))
+	rectangleShape2D.set_size(Vector2(PLAYER_WIDTH,PLAYER_DOWN_JUMP_HEIGHT))
 	collisionShape2D.set_shape(rectangleShape2D)
 	area2D.add_child(collisionShape2D)
 	area2D.connect("body_exited", body_exited)
@@ -37,7 +37,7 @@ func _init(parent,limit_left,limit_right):
 
 	var collisionShape2D=CollisionShape2D.new()
 	var rectangleShape2D=RectangleShape2D.new()
-	rectangleShape2D.set_size(Vector2(32,32))
+	rectangleShape2D.set_size(Vector2(PLAYER_WIDTH,PLAYER_HEIGHT))
 	collisionShape2D.set_shape(rectangleShape2D)
 	
 	var camera2d=Camera2D.new()
@@ -80,15 +80,12 @@ func _process(delta):
 
 func _physics_process(delta):
 	_player.velocity.y += 800 * delta
-	if _player.is_on_floor()==false and _down_jump_flag==false:
-		_player.collision_mask=Common.ALL_MASK-pow(2,31)
-	if _player.move_and_slide()==true:
+	if _player.move_and_slide()==true &&_player.is_on_floor_only()==true:
 		for i in _player.get_slide_collision_count():
 			var collision = _player.get_slide_collision(i).get_collider()
-			var layer=collision.get_meta("layer","")
-			var type=collision.get_meta("type","")
-			if str(layer) != "":#当碰撞体无layer时
-				_player.set_z_index(Common.composite_zindex(layer,1,1,1))
-				if  _player.is_on_floor()==true:
-					_player.collision_mask=pow(2,layer)
-	
+			var layer=collision.get_meta("layer",0)
+			_player.set_z_index(Common.composite_zindex(layer,1,1,1))
+			if  _player.is_on_floor()==true:
+				_player.collision_mask=pow(2,layer)+pow(2,layer+8)
+	elif _player.is_on_floor()==false and _down_jump_flag==false:
+		_player.collision_mask=int((pow(2,8)-1))|_player.collision_mask

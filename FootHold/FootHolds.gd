@@ -24,32 +24,38 @@ func _init(parent,foothold,layer):
 	collisionShape2D.set_one_way_collision(true)
 	match get_foothold_type(a,b):
 		#因为单边碰撞需要靠旋转来完成,所有先旋转到角度后再转回来
+		#地面和墙处于不同的层,地面在1-8层,墙在9-16层,因为人物在空中可以和1-8层墙碰撞
+		#但是只能与当前layer+8层的墙碰撞
 		FootHoldType.UP:
 			a=a.rotated(deg_to_rad(0))
 			b=b.rotated(deg_to_rad(0))
 			collisionShape2D.set_rotation_degrees(0)
 			staticBody2D.set_meta("type","floor")
+			staticBody2D.collision_layer=pow(2, layer)
 		FootHoldType.DOWN:
 			a=a.rotated(deg_to_rad(-180))
 			b=b.rotated(deg_to_rad(-180))
 			collisionShape2D.set_rotation_degrees(180)
 			staticBody2D.set_meta("type","floor")
+			staticBody2D.collision_layer=pow(2, layer)
 		FootHoldType.LEFT:
 			a=a.rotated(deg_to_rad(-90))
 			b=b.rotated(deg_to_rad(-90))
 			collisionShape2D.set_rotation_degrees(90)
 			staticBody2D.set_meta("type","wall")
+			staticBody2D.collision_layer=pow(2, layer+8)
 		FootHoldType.RIGHT:
 			a=a.rotated(deg_to_rad(-270))
 			b=b.rotated(deg_to_rad(-270))
 			collisionShape2D.set_rotation_degrees(270)
 			staticBody2D.set_meta("type","wall")
+			staticBody2D.collision_layer=pow(2, layer+8)
 	segmentShape2D.set_a(a)
 	segmentShape2D.set_b(b)
 	collisionShape2D.set_shape(segmentShape2D)
 	staticBody2D.set_meta("layer",layer)
 	staticBody2D.add_child(collisionShape2D)
-	staticBody2D.collision_layer=pow(2, layer)
+	
 	limit_left = min(foothold['X1'], foothold['X2'],limit_left)
 	limit_right = max(foothold['X1'], foothold['X2'], limit_right)
 	parent.add_child(staticBody2D)

@@ -32,8 +32,8 @@ func _ready():
 		staticBody2D.add_child(collisionShape2D)
 		staticBody2D.collision_mask=0
 		staticBody2D.collision_layer=0
-		staticBody2D.collision_mask=Common.ALL_MASK
-		staticBody2D.collision_layer=Common.ALL_MASK
+		staticBody2D.collision_mask=pow(2,32)-1
+		staticBody2D.collision_layer=pow(2,32)-1
 		add_child(staticBody2D)
 	
 	
