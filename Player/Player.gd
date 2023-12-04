@@ -80,6 +80,8 @@ func _process(delta):
 
 func _physics_process(delta):
 	_player.velocity.y += 800 * delta
+	if _player.is_on_floor()==false and _down_jump_flag==false:
+		_player.collision_mask=Common.ALL_MASK-pow(2,31)
 	if _player.move_and_slide()==true:
 		for i in _player.get_slide_collision_count():
 			var collision = _player.get_slide_collision(i).get_collider()
@@ -89,5 +91,4 @@ func _physics_process(delta):
 				_player.set_z_index(Common.composite_zindex(layer,1,1,1))
 				if  _player.is_on_floor()==true:
 					_player.collision_mask=pow(2,layer)
-	elif _player.is_on_floor()==false and _down_jump_flag==false:
-		_player.collision_mask=Common.ALL_MASK-pow(2,31)
+	
