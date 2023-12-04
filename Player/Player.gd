@@ -16,7 +16,7 @@ const PLAYER_VELOCITY_X=400
 
 func body_exited(body: Node2D):
 	_down_jump_flag=false
-	print("exit")
+	#print("exit")
 
 func init_area(_player):
 	var area2D=Area2D.new()
