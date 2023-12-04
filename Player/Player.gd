@@ -22,7 +22,7 @@ func init_area(_player):
 	var area2D=Area2D.new()
 	var collisionShape2D=CollisionShape2D.new()
 	var rectangleShape2D=RectangleShape2D.new()
-	rectangleShape2D.set_size(Vector2(32,64))
+	rectangleShape2D.set_size(Vector2(32,48))
 	collisionShape2D.set_shape(rectangleShape2D)
 	area2D.add_child(collisionShape2D)
 	area2D.connect("body_exited", body_exited)
