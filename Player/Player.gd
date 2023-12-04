@@ -3,7 +3,6 @@ extends Node2D
 class_name Player;
 var _foothold
 var _player
-
 var _down_jump_flag=false
 
 
@@ -59,7 +58,7 @@ func get_input(delta):
 	var right = Input.is_action_pressed('ui_right')&&!Input.is_action_pressed('ui_down')
 	var left = Input.is_action_pressed('ui_left')&&!Input.is_action_pressed('ui_down')
 	var jump = Input.is_action_pressed('ui_left_alt')&&!Input.is_action_pressed('ui_down')
-	var down_jump = Input.is_action_just_pressed('ui_left_alt')&&Input.is_action_pressed('ui_down')
+	var down_jump = Input.is_action_pressed('ui_left_alt')&&Input.is_action_pressed('ui_down')
 
 	if down_jump and _player.is_on_floor() and _down_jump_flag==false:
 		_player.collision_mask=0
