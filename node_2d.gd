@@ -38,22 +38,7 @@ func _ready():
 	
 	
 	#生成人物
-	var characterBody2D=CharacterBody2D.new()
-	characterBody2D.set_floor_snap_length(20)
-	var sprite=Sprite2D.new()
-	sprite.set_texture(load("res://icon.svg"))
-	sprite.set_scale(Vector2(0.25,0.25))
-	var collisionShape2D=CollisionShape2D.new()
-	var rectangleShape2D=RectangleShape2D.new()
-	rectangleShape2D.set_size(Vector2(32,32))
-	collisionShape2D.set_shape(rectangleShape2D)
-	var camera2d=Camera2D.new()
-	camera2d.set_position_smoothing_enabled(true)
-	characterBody2D.add_child(sprite)
-	characterBody2D.add_child(collisionShape2D)
-	characterBody2D.add_child(camera2d)
-	characterBody2D.set_script(load("res://Player/Player.gd"))
-	add_child(characterBody2D)
+	var player=Player.new(self,limit_left,limit_right)
 	#生成地图layers
 	for i in range(0,json['Layers'].size()):
 		var layers=json['Layers'][i]
@@ -67,8 +52,7 @@ func _ready():
 				node.set_z_index(Common.composite_zindex(i,tile['Resource']['Z'],tile['ID'],0))
 				add_child(node)
 				
-	camera2d.limit_left=limit_left
-	camera2d.limit_right=limit_right
+	
 	
 	for i in range(0,json['Layers'].size()):
 		var layers=json['Layers'][i]

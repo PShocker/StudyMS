@@ -4,6 +4,12 @@ class_name FootHolds;
 static var limit_left=0
 static var limit_right=0
 
+enum FootHoldType{
+	UP = 0,
+	DOWN = 1,
+	LEFT = 2,
+	RIGHT = 3,
+}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -18,33 +24,32 @@ func _init(parent,foothold,layer):
 	collisionShape2D.set_one_way_collision(true)
 	match get_foothold_type(a,b):
 		#因为单边碰撞需要靠旋转来完成,所有先旋转到角度后再转回来
-		Common.FootHoldType.UP:
+		FootHoldType.UP:
 			a=a.rotated(deg_to_rad(0))
 			b=b.rotated(deg_to_rad(0))
 			collisionShape2D.set_rotation_degrees(0)
-		Common.FootHoldType.DOWN:
+			staticBody2D.set_meta("type","floor")
+		FootHoldType.DOWN:
 			a=a.rotated(deg_to_rad(-180))
 			b=b.rotated(deg_to_rad(-180))
 			collisionShape2D.set_rotation_degrees(180)
-		Common.FootHoldType.LEFT:
+			staticBody2D.set_meta("type","floor")
+		FootHoldType.LEFT:
 			a=a.rotated(deg_to_rad(-90))
 			b=b.rotated(deg_to_rad(-90))
 			collisionShape2D.set_rotation_degrees(90)
-		Common.FootHoldType.RIGHT:
+			staticBody2D.set_meta("type","wall")
+		FootHoldType.RIGHT:
 			a=a.rotated(deg_to_rad(-270))
 			b=b.rotated(deg_to_rad(-270))
 			collisionShape2D.set_rotation_degrees(270)
+			staticBody2D.set_meta("type","wall")
 	segmentShape2D.set_a(a)
 	segmentShape2D.set_b(b)
 	collisionShape2D.set_shape(segmentShape2D)
 	staticBody2D.set_meta("layer",layer)
-	if foothold['X1']==foothold['X2']:
-		staticBody2D.set_meta("type","wall")
-	else:
-		staticBody2D.set_meta("type","floor")
 	staticBody2D.add_child(collisionShape2D)
 	staticBody2D.collision_layer=pow(2, layer)
-	
 	limit_left = min(foothold['X1'], foothold['X2'],limit_left)
 	limit_right = max(foothold['X1'], foothold['X2'], limit_right)
 	parent.add_child(staticBody2D)
@@ -67,13 +72,13 @@ func _init(parent,foothold,layer):
 func get_foothold_type(a,b):
 	if a.y==b.y:
 		if a.x<b.x:
-			return Common.FootHoldType.UP
+			return FootHoldType.UP
 		else:
-			return Common.FootHoldType.DOWN
+			return FootHoldType.DOWN
 	if a.x==b.x:
 		if a.y<b.y:
-			return Common.FootHoldType.LEFT
+			return FootHoldType.LEFT
 		else :
-			return Common.FootHoldType.RIGHT
-	return Common.FootHoldType.UP
+			return FootHoldType.RIGHT
+	return FootHoldType.UP
 	
