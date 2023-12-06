@@ -85,5 +85,5 @@ func _physics_process(delta):
 			var layer=collision.get_meta("layer",0)
 			_player.set_z_index(Common.composite_zindex(layer,1,1,1))
 			_player.collision_mask=pow(2,layer)+pow(2,layer+8)
-	elif _player.is_on_floor()==false and _down_jump_flag==false:
+	elif _down_jump_flag==false:
 		_player.collision_mask=int((pow(2,8)-1))|_player.collision_mask
