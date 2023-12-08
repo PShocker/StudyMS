@@ -5,16 +5,16 @@ var _foothold
 var _player
 var _down_jump_flag=false
 
-
 const PLAYER_VELOCITY_X=400
 const PLAYER_WIDTH=32
 const PLAYER_HEIGHT=32
-const PLAYER_DOWN_JUMP_HEIGHT=40
+const PLAYER_DOWN_JUMP_HEIGHT=48
 
 
 func body_exited(body: Node2D):
 	_down_jump_flag=false
 	#print("exit")
+
 
 func init_area(_player):
 	var area2D=Area2D.new()
@@ -25,6 +25,7 @@ func init_area(_player):
 	collisionShape2D.set_shape(rectangleShape2D)
 	area2D.add_child(collisionShape2D)
 	area2D.connect("body_exited", body_exited)
+	area2D.collision_mask=int((pow(2,8)-1))
 	_player.add_child(area2D)
 
 func _init(parent,limit_left,limit_right):
@@ -66,7 +67,7 @@ func get_input(delta):
 		_down_jump_flag=true
 		pass
 	elif jump and _player.is_on_floor():
-		_player.velocity.y += -500
+		_player.velocity.y += -450
 	if right and _player.is_on_floor():
 		_player.velocity.x += PLAYER_VELOCITY_X
 	if left and _player.is_on_floor():
@@ -85,5 +86,7 @@ func _physics_process(delta):
 			var layer=collision.get_meta("layer",0)
 			_player.set_z_index(Common.composite_zindex(layer,1,1,1))
 			_player.collision_mask=pow(2,layer)+pow(2,layer+8)
+			#area2D.collision_mask=_player.collision_mask
 	elif _down_jump_flag==false:
 		_player.collision_mask=int((pow(2,8)-1))|_player.collision_mask
+		
