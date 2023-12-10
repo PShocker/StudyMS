@@ -236,7 +236,7 @@ public partial class Wz : Node
 	
 	static string SavePngFile(Wz_Node pngNode) {
 		var bytes = pngNode.GetValue<Wz_Png>().ExtractPngBytes();
-		var SigBase64= JsonConvert.SerializeObject(bytes);
+		var SigBase64= Convert.ToBase64String(bytes,System.Base64FormattingOptions.None);
 		return SigBase64;
 	}
 	
