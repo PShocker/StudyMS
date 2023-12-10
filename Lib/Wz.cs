@@ -236,9 +236,8 @@ public partial class Wz : Node
 	
 	static string SavePngFile(Wz_Node pngNode) {
 		var bytes = pngNode.GetValue<Wz_Png>().ExtractPngBytes();
-		var SigBase64= Convert.ToBase64String(bytes);
+		var SigBase64= JsonConvert.SerializeObject(bytes);
 		return SigBase64;
-		return "123456";
 	}
 	
 	 class MapInfo
