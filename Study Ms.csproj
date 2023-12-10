@@ -14,5 +14,6 @@
     <Reference Include="Lib/WzComparerR2.WzLib.dll">
     </Reference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,8 @@ using Godot;
 using System;
 using WzComparerR2.WzLib;
 using Newtonsoft.Json;
-
+using System.Drawing.Imaging;
+using System.Drawing;
 
 public partial class Wz : Node
 {
@@ -176,6 +177,7 @@ public partial class Wz : Node
 			OriginX = origin?.X ?? 0,
 			OriginY = origin?.Y ?? 0,
 			Z = pngNode.FindNodeByPath("z").GetValueEx<int>(0),
+			ResourceUrl = SavePngFile(linkedPngNode),
 		};
 		if (sprite is Frame frame) {
 			frame.Delay = pngNode.FindNodeByPath("delay").GetValueEx<int>(100);
@@ -230,6 +232,13 @@ public partial class Wz : Node
 		return new FrameAnimate(){
 			Frames = frames
 		};
+	}
+	
+	static string SavePngFile(Wz_Node pngNode) {
+		var bytes = pngNode.GetValue<Wz_Png>().ExtractPngBytes();
+		var SigBase64= Convert.ToBase64String(bytes);
+		return SigBase64;
+		return "123456";
 	}
 	
 	 class MapInfo

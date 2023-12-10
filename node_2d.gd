@@ -9,7 +9,8 @@ var json=JSON.parse_string(file.get_as_text())
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	#json=JSON.parse_string(Wz.Test())
+	print(Wz.Test())
+	json=JSON.parse_string(Wz.Test())
 	#print(Wz.Test()) #调用wz的dll解析
 	var limit_left = 0 #Tile左边界
 	var limit_right = 0 #Tile右边界

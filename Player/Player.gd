@@ -72,6 +72,10 @@ func get_input(delta):
 		_player.velocity.x += PLAYER_VELOCITY_X
 	if left and _player.is_on_floor():
 		_player.velocity.x -= PLAYER_VELOCITY_X
+	if right and !_player.is_on_floor():
+		_player.velocity.x += 0.1
+	if left and !_player.is_on_floor():
+		_player.velocity.x -= 0.1
 	_player.velocity.x=clamp(_player.velocity.x,-PLAYER_VELOCITY_X,PLAYER_VELOCITY_X)
 
 func _process(delta):
