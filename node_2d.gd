@@ -1,14 +1,10 @@
 extends Node2D
 
 var camera:Camera2D;
-#var fileName="Map/Map/Map0/000010000.json"
-#var file=FileAccess.open(fileName,FileAccess.READ)
-#var json=JSON.parse_string(file.get_as_text())
 var json
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	#print(Wz.Test())
 	json=JSON.parse_string(Wz.Test())
 	#print(Wz.Test()) #调用wz的dll解析
 	var limit_left = 0 #Tile左边界
