@@ -16,5 +16,5 @@ func composite_zindex(z, z0, z1, z2):
 
 func get_resource(i):
 	var image := Image.new()
-	image.load_png_from_buffer(Wz.GetResource(i))
+	image.load_png_from_buffer(WzMap.GetResource(i))
 	return ImageTexture.create_from_image(image)

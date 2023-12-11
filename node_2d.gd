@@ -5,8 +5,8 @@ var json
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	json=JSON.parse_string(Wz.Test())
-	#print(Wz.Test()) #调用wz的dll解析
+	json=JSON.parse_string(WzMap.Test())
+	#print(WzMap.Test()) #调用WzMap的dll解析
 	var limit_left = json['Infos']['VRLeft']
 	var limit_right = json['Infos']['VRRight']
 	var limit_top = json['Infos']['VRTop']

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System.Drawing.Imaging;
 using System.Drawing;
 
-public partial class Wz : Node
+public partial class WzMap : Node
 {
 	
 	public static List<Byte[]> ResourceList=new List<byte[]>();

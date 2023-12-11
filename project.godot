@@ -18,7 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 Common="*res://Common/Common.gd"
-Wz="*res://Lib/Wz.cs"
+WzMap="*res://Lib/WzMap.cs"
+WzAvatar="*res://Lib/WzAvatar.cs"
 
 [display]
 
