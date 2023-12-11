@@ -7,15 +7,17 @@ var json
 func _ready():	
 	json=JSON.parse_string(Wz.Test())
 	#print(Wz.Test()) #调用wz的dll解析
-	var limit_left = 0 #Tile左边界
-	var limit_right = 0 #Tile右边界
+	var limit_left = json['Infos']['VRLeft']
+	var limit_right = json['Infos']['VRRight']
+	var limit_top = json['Infos']['VRTop']
+	var limit_bottom = json['Infos']['VRBottom']
 	#创建FootHold,不用判断非空,因为地图是一定有fh
 	for mapFootHold in json['FootHolds']:
 		var layer=mapFootHold['Layer']
 		for foothold in mapFootHold['FootHolds']:
 			FootHolds.new(self,foothold,layer)
-	limit_left=FootHolds.limit_left
-	limit_right=FootHolds.limit_right
+	#limit_left=FootHolds.limit_left
+	#limit_right=FootHolds.limit_right
 	#地图左右边界
 	for i in [limit_left,limit_right]:
 		var staticBody2D=StaticBody2D.new()
@@ -34,7 +36,7 @@ func _ready():
 	
 	
 	#生成人物
-	var player=Player.new(self,limit_left,limit_right)
+	var player=Player.new(self,limit_left,limit_right,limit_top,limit_bottom)
 	#生成地图layers
 	for i in range(0,json['Layers'].size()):
 		var layers=json['Layers'][i]

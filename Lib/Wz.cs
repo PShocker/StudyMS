@@ -26,7 +26,7 @@ public partial class Wz : Node
 				mapImgNode = wzs.WzNode.FindNodeByPath(true, "Map", "Map", $"Map{mapID / 100000000}", $"{mapID}.img");
 			}
 			// Load map manifest
-			MapInfo mapInfo = new();
+			MapImg mapImg = new();
 			for (int layer = 0; layer < 8; layer++)
 			{
 				Wz_Node layerNode = mapImgNode.FindNodeByPath(layer.ToString());
@@ -35,7 +35,7 @@ public partial class Wz : Node
 				Wz_Node tileRootNode = layerNode.FindNodeByPath("tile");
 				if (tileRootNode != null && tileRootNode.Nodes.Count > 0) {
 					var tileClass = layerNode.FindNodeByPath(@"info\tS").GetValue<string>();
-					mapInfo.Layers[layer].Tiles = tileRootNode.Nodes.Select(tileNode=>{
+					mapImg.Layers[layer].Tiles = tileRootNode.Nodes.Select(tileNode=>{
 						string resourceUrl = string.Format("Map/Tile/{0}.img/{1}/{2}",
 							tileClass,
 							tileNode.FindNodeByPath("u").GetValue<string>(),
@@ -54,7 +54,7 @@ public partial class Wz : Node
 				Wz_Node objRootNode = layerNode.FindNodeByPath("obj");
 				if (objRootNode != null && objRootNode.Nodes.Count > 0)
 				{
-					mapInfo.Layers[layer].Objs = objRootNode.Nodes.Select(objNode =>
+					mapImg.Layers[layer].Objs = objRootNode.Nodes.Select(objNode =>
 					{
 						string resourceUrl = string.Format("Map/Obj/{0}.img/{1}/{2}/{3}",
 							objNode.FindNodeByPath("oS").GetValue<string>(),
@@ -76,7 +76,7 @@ public partial class Wz : Node
 				// load map back
 				Wz_Node backRootNode = mapImgNode.FindNodeByPath("back");
 				if (backRootNode != null) {
-					mapInfo.Backs = backRootNode.Nodes.Select(backNode=>{
+					mapImg.Backs = backRootNode.Nodes.Select(backNode=>{
 						int ani = backNode.FindNodeByPath("ani").GetValueEx<int>(0);
 						string resourceUrl = string.Format("Map/Back/{0}.img/{1}/{2}",
 							backNode.FindNodeByPath("bS").GetValue<string>(),
@@ -158,9 +158,40 @@ public partial class Wz : Node
 						}
 					}
 				}
-				mapInfo.FootHolds=mapFootHoldList.ToArray();
+				mapImg.FootHolds=mapFootHoldList.ToArray();
 			}
-		   	return JsonConvert.SerializeObject(mapInfo);
+			Wz_Node info = mapImgNode.FindNodeByPath("info");
+			if (info != null)
+			{
+				Wz_Node left = info.FindNodeByPath("VRLeft"),
+					top = info.FindNodeByPath("VRTop"),
+					right = info.FindNodeByPath("VRRight"),
+					bottom = info.FindNodeByPath("VRBottom"),
+					bgm = info.FindNodeByPath("bgm"),
+					link = info.FindNodeByPath("link"),
+					mapMark = info.FindNodeByPath("mapMark");
+
+				// load sound
+				string bgmPath=null;
+
+				if (bgm != null)
+				{
+					bgmPath = bgm.GetValueEx<string>(null);
+				}
+
+				// load minimap
+				var mapMarks = mapMark.GetValueEx<string>(null);
+				MapInfo Mapinfo = new MapInfo
+				{
+					VRLeft = left.GetValue<int>(),
+					VRTop = top.GetValue<int>(),
+					VRRight = right.GetValue<int>(),
+					VRBottom = bottom.GetValue<int>(),
+					Bgm = bgmPath,
+				};
+				mapImg.Infos = Mapinfo;
+			}
+		   	return JsonConvert.SerializeObject(mapImg);
 		} finally {
 			wzs.Clear();
 		}
@@ -247,12 +278,34 @@ public partial class Wz : Node
 		return ResourceList[i];
 	}
 	
-	 class MapInfo
+	 class MapImg
 	{
 		public int ID { get; set; }
 		public MapLayer[] Layers { get; } = Enumerable.Range(0, 8).Select(_ => new MapLayer()).ToArray();
 		public MapBack[] Backs { get; set; }
 		public MapFootHold[] FootHolds { get; set; }
+		public MapInfo Infos { get; set; }
+
+	}
+	
+	class MapInfo
+	{
+		public int? ID { get; set; }
+		public string Name { get; set; }
+		public int? Link { get; set; }
+		public int VRLeft { get; set; }
+		public int VRTop { get; set; }
+		public int VRRight { get; set; }
+		public int VRBottom { get; set; }
+		public string MapMark { get; set; }
+		public string Bgm { get; set; }
+
+		public bool IsTown { get; set; }
+		public bool CanFly { get; set; }
+		public bool CanSwim { get; set; }
+		public int? ReturnMap { get; set; }
+		public bool HideMinimap { get; set; }
+		public int FieldLimit { get; set; }
 	}
 
 	class MapFootHold

@@ -28,7 +28,7 @@ func init_area(_player):
 	area2D.collision_mask=int((pow(2,8)-1))
 	_player.add_child(area2D)
 
-func _init(parent,limit_left,limit_right):
+func _init(parent,limit_left,limit_right,limit_top,limit_bottom):
 	_player=CharacterBody2D.new()
 	_player.set_floor_snap_length(20)
 	var sprite=Sprite2D.new()
@@ -44,6 +44,8 @@ func _init(parent,limit_left,limit_right):
 	camera2d.set_position_smoothing_enabled(true)
 	camera2d.limit_left=limit_left
 	camera2d.limit_right=limit_right
+	camera2d.limit_top=limit_top
+	camera2d.limit_bottom=limit_bottom
 	_player.add_child(sprite)
 	_player.add_child(collisionShape2D)
 	_player.add_child(camera2d)
