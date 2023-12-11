@@ -90,7 +90,7 @@ func _init(parent,backs):
 	layerNode.set_follow_viewport(true)
 	parent.add_child(layerNode)
 	layerNode.add_child(self)
-	_texture=load("res://"+_backs['Resource']['ResourceUrl'])
+	_texture=Common.get_resource(_backs['Resource']['ResourceUrl'])
 	_width=_backs['Resource']['Width']
 	_height=_backs['Resource']['Height']
 	_x=backs['X']

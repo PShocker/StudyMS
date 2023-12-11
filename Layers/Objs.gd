@@ -20,7 +20,7 @@ func _init(parent,obj,i):
 	var node = Sprite2D.new()
 	var spriteFrames=SpriteFrames.new()
 	for frame in frames:
-		spriteFrames.add_frame("default",load("res://"+frame['ResourceUrl']))
+		spriteFrames.add_frame("default",Common.get_resource(frame['ResourceUrl']))
 		_offset.push_back(Vector2(-frame['OriginX'],-frame['OriginY']))
 		_z_index.push_back(Vector2(frame['Z'],obj['ID']))
 	animatedSprite2D.set_sprite_frames(spriteFrames)

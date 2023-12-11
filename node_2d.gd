@@ -1,15 +1,14 @@
 extends Node2D
 
 var camera:Camera2D;
-var fileName="Map/Map/Map0/000010000.json"
-var file=FileAccess.open(fileName,FileAccess.READ)
-#var json
-var json=JSON.parse_string(file.get_as_text())
-
+#var fileName="Map/Map/Map0/000010000.json"
+#var file=FileAccess.open(fileName,FileAccess.READ)
+#var json=JSON.parse_string(file.get_as_text())
+var json
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	print(Wz.Test())
+	#print(Wz.Test())
 	json=JSON.parse_string(Wz.Test())
 	#print(Wz.Test()) #调用wz的dll解析
 	var limit_left = 0 #Tile左边界
@@ -46,7 +45,8 @@ func _ready():
 		if layers['Tiles']!=null:
 			for tile in layers['Tiles']:
 				var node = Sprite2D.new()
-				node.set_texture(load("res://"+tile['Resource']['ResourceUrl']))
+				var image := Image.new()
+				node.set_texture(Common.get_resource(tile['Resource']['ResourceUrl']))
 				node.set_centered(false)
 				node.set_position(Vector2(tile['X'], tile['Y']))
 				node.set_offset(Vector2(-tile['Resource']['OriginX'], -tile['Resource']['OriginY']))

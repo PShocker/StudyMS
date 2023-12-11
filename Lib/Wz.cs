@@ -8,11 +8,12 @@ using System.Drawing;
 public partial class Wz : Node
 {
 	
+	public static List<Byte[]> ResourceList=new List<byte[]>();
 	public String Test()
 	{
 		Wz_Structure wzs = new();
 		wzs.WzVersionVerifyMode = WzVersionVerifyMode.Fast;
-		string baseWzFolder = @"C:\Nexon\Library\maplestory\appdata\Data\Base";  // <- change to your own                         // <- change to your own
+		string baseWzFolder = @"C:\maplestory\appdata\Data\Base";;  // <- change to your own                         // <- change to your own
 		try {
 			wzs.LoadWzFolder(baseWzFolder, ref wzs.WzNode, true);
 			int mapID = 10000;
@@ -234,10 +235,15 @@ public partial class Wz : Node
 		};
 	}
 	
-	static string SavePngFile(Wz_Node pngNode) {
+	static int SavePngFile(Wz_Node pngNode) {
 		var bytes = pngNode.GetValue<Wz_Png>().ExtractPngBytes();
-		var SigBase64= Convert.ToBase64String(bytes,System.Base64FormattingOptions.None);
-		return SigBase64;
+		ResourceList.Add(bytes);
+		return ResourceList.Count-1;
+	}
+	
+	static Byte[] GetResource(int i)
+	{
+		return ResourceList[i];
 	}
 	
 	 class MapInfo
@@ -316,7 +322,7 @@ public partial class Wz : Node
 		public int OriginX {get;set;}
 		public int OriginY { get; set; }
 		public int Z { get; set; }
-		public string ResourceUrl { get; set; }
+		public int ResourceUrl { get; set; }
 	}
 
 	class Frame : Sprite
