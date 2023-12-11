@@ -13,9 +13,10 @@ public partial class Wz : Node
 	{
 		Wz_Structure wzs = new();
 		wzs.WzVersionVerifyMode = WzVersionVerifyMode.Fast;
-		string baseWzFolder = @"C:\maplestory\appdata\Data\Base";;  // <- change to your own                         // <- change to your own
+		string baseWz = @".\Data\Base.wz";  // <- change to your own                         // <- change to your own
 		try {
-			wzs.LoadWzFolder(baseWzFolder, ref wzs.WzNode, true);
+			//wzs.LoadWzFolder(baseWzFolder, ref wzs.WzNode, true);
+			wzs.Load(baseWz, true);
 			int mapID = 10000;
 			int wzVersion = wzs.wz_files[0].Header.WzVersion;
 			Wz_Node mapImgNode;
