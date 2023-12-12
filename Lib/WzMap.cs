@@ -13,7 +13,7 @@ public partial class WzMap : Node
 	{
 		Wz_Structure wzs = new();
 		wzs.WzVersionVerifyMode = WzVersionVerifyMode.Fast;
-		string baseWz = @".\Data\Base.wz";  // <- change to your own                         // <- change to your own
+		string baseWz = @".\assets\Data\Base.wz";  // <- change to your own                         // <- change to your own
 		try {
 			//wzs.LoadWzFolder(baseWzFolder, ref wzs.WzNode, true);
 			wzs.Load(baseWz, true);
