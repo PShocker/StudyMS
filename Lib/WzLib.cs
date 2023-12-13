@@ -12,7 +12,7 @@ public static partial class WzLib
 		wzs.Load(baseWz, true);
 	}
 	
-	static Wz_Node FindWz(string path)
+	public static Wz_Node FindWz(string path)
 	{
 		var fullPath = path.Split('/', '\\');
 		var WzType = Enum.TryParse<Wz_Type>(fullPath[0], true, out var wzType) ? wzType : Wz_Type.Unknown;
