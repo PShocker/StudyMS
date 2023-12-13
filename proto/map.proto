@@ -1,0 +1,49 @@
+// 指定采用 proto3 语法
+syntax = "proto3";
+
+message MapImg{
+    message Info{
+        int32 version=1;
+        int32 cloud=2;
+        int32 town=3;
+        int32 mobRate=4;
+        string bgm=5;
+        int32 returnMap=6;
+        string mapDesc=7;
+        int32 hideMinimap=8;
+        int32 forcedReturn=9;
+        int32 moveLimit=10;
+        string mapMark=11;
+        int32 swim=12;
+        int32 fieldLimit=13;
+        int32 VRTop=14;
+        int32 VRLeft=15;
+        int32 VRBottom=16;
+        int32 VRRight=17;
+        int32 fly=18;
+        int32 noMapCmd=19;
+        string onFirstUserEnter=20;
+        string onUserEnter=21;
+    };
+    message Layer{
+        message Info{
+            string tS=1;
+        }
+        message Tile{
+            message _{
+                int32 x=1;
+                int32 y=2;
+                string u=3;
+                int32 no=4;
+                int32 zM=5;
+            }
+            repeated _ tile=1; 
+        }
+    };
+    Info info=1;
+    Layer layer=2;
+}
+
+
+
+
