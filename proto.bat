@@ -1,1 +1,0 @@
-protoc .\proto\map.proto --csharp_out=./proto
