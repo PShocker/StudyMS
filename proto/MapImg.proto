@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+
+message MapImg {
+    int32 id = 1;
+    repeated MapLayer layer= 2;
+    repeated MapBack back= 3;
+    repeated MapFootHold foothold= 4;
+}
+
+message MapLife
+{
+    int32 id =1;
+    string type=2;
+    int32 x =3;
+    int32 y =4;
+    int32 fh =5;
+    int32 cy =6;
+    int32 rx0 =7;
+    int32 rx1 =8;
+    int32 f =9;
+}
+
+message MapInfo
+{
+    int32 id=1;
+    string name=2;
+    int32 link=3;
+    int32 vrleft=4;
+    int32 vrtop=5;
+    int32 vrright=6;
+    int32 vrbottom=7;
+    string mapmark=8;
+    string bgm=9;
+    bool istown=10;
+    bool canfly=11;
+    bool canswim=12;
+    int32 returnmap=13;
+    bool hideminimap=14;
+    int32 fieldlimit=15;
+}
+
+message MapLayer
+{
+    repeated MapTile tile=1;
+    repeated MapObj obj=2;
+}
+
+message MapTile
+{
+    int32 id=1;
+    int32 x=2;
+    int32 y=3;
+    Sprite resource=4;
+}
+
+message MapObj
+{
+    int32 id=1;
+    int32 x=2;
+    int32 y=3;
+    int32 z=4;
+    bool flipx=5;
+    FrameAnimate resource=6;
+}
+
+message MapFootHold
+{
+    int32 layer=1;
+    repeated FootHold foothold=2;
+}
+
+message FootHold
+{
+    int32 id=1;
+    int32 x1=2;
+    int32 y1=3;
+    int32 x2=4;
+    int32 y2=5;
+    int32 prev=6;
+    int32 next=7;
+    int32 piece=8;
+}
+
+message Sprite
+{
+    int32 width=1;
+    int32 height=2;
+    int32 originx=3;
+    int32 originy=4;
+    int32 z=5;
+    bytes resource=6;
+}
+
+message Frame
+{
+    Sprite sprite=1;
+    int32 delay=2;
+    int32 a0=3;
+    int32 a1=4;
+}
+
+message FrameAnimate
+{
+    repeated Frame frames=1;
+}
+
+message MapBack
+{
+    int32 id=1;
+    int32 x=2;
+    int32 y=3;
+    int32 cx=4;
+    int32 cy=5;
+    int32 rx=6;
+    int32 ry=7;
+    int32 alpha=8;
+    bool flipx=9;
+    bool front=10;
+    int32 ani=11;
+    int32 type=12;
+    bytes resource=13;
+}
