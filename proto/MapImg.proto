@@ -3,9 +3,11 @@ syntax = "proto3";
 
 message MapImg {
     int32 id = 1;
-    repeated MapLayer layer= 2;
-    repeated MapBack back= 3;
-    repeated MapFootHold foothold= 4;
+    MapInfo info =2;
+    repeated MapLife life =3;
+    repeated MapLayer layer= 4;
+    repeated MapBack back= 5;
+    repeated MapFootHold foothold= 6;
 }
 
 message MapLife
@@ -119,5 +121,6 @@ message MapBack
     bool front=10;
     int32 ani=11;
     int32 type=12;
-    bytes resource=13;
+    FrameAnimate frameanimate=13;
+    Sprite sprite=14;
 }
