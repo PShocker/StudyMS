@@ -27,12 +27,11 @@ class Program
             Wz_Node mapImgNode = wzs.WzNode.FindNodeByPath(true, "Map", "Map", $"Map{mapID / 100000000}", $"{mapID:000000000}.img");
 
             // Load map manifest
-            MapImg mapInfo = new();
-            // mapInfo.FootHold=new FootholdPatch[0];
+            MapImg mapImg = new();
             List<FootHold> footholds = new List<FootHold>();
             for (int layer = 0; layer < 8; layer++)
             {
-                MapLayer mapLayer=new();
+                MapLayer mapLayer = new();
                 Wz_Node layerNode = mapImgNode.FindNodeByPath(layer.ToString());
 
                 // load tile
@@ -53,7 +52,7 @@ class Program
                             Id = int.Parse(tileNode.Text),
                             X = tileNode.FindNodeByPath("x").GetValueEx<int>(0),
                             Y = tileNode.FindNodeByPath("y").GetValueEx<int>(0),
-                            Resource = LoadSpriteBase<Sprite>(wzs, resourceUrl, outputDir),
+                            Resource = LoadSprite(wzs, resourceUrl),
                         };
                         mapLayer.Tile.Add(mapTile);
                     }
@@ -63,75 +62,84 @@ class Program
                 Wz_Node objRootNode = layerNode.FindNodeByPath("obj");
                 if (objRootNode != null && objRootNode.Nodes.Count > 0)
                 {
-                    
-                    foreach (var objNode in objRootNode.Nodes){
+
+                    foreach (var objNode in objRootNode.Nodes)
+                    {
                         string resourceUrl = string.Format("Map/Obj/{0}.img/{1}/{2}/{3}",
                             objNode.FindNodeByPath("oS").GetValue<string>(),
                             objNode.FindNodeByPath("l0").GetValue<string>(),
                             objNode.FindNodeByPath("l1").GetValue<string>(),
                             objNode.FindNodeByPath("l2").GetValue<string>()
                         );
-                        MapObj mapObj=new(){
+                        MapObj mapObj = new()
+                        {
                             Id = int.Parse(objNode.Text),
                             X = objNode.FindNodeByPath("x").GetValueEx<int>(0),
                             Y = objNode.FindNodeByPath("y").GetValueEx<int>(0),
                             Z = objNode.FindNodeByPath("z").GetValueEx<int>(0),
                             Flipx = objNode.FindNodeByPath("f").GetValueEx<int>(0) != 0,
-                            Resource = LoadAnimation(wzs, resourceUrl, outputDir),
+                            Resource = LoadAnimation(wzs, resourceUrl),
                         };
                         mapLayer.Obj.Add(mapObj);
                     }
                 }
+                mapImg.Layer.Add(mapLayer);
+            }
 
-                // load map back
-                Wz_Node backRootNode = mapImgNode.FindNodeByPath("back");
-                if (backRootNode != null)
+            // load map back
+            Wz_Node backRootNode = mapImgNode.FindNodeByPath("back");
+            if (backRootNode != null)
+            {
+                foreach (var backNode in backRootNode.Nodes)
                 {
-                    mapInfo.Backs = backRootNode.Nodes.Select(backNode =>
-                    {
-                        int ani = backNode.FindNodeByPath("ani").GetValueEx<int>(0);
-                        string resourceUrl = string.Format("Map/Back/{0}.img/{1}/{2}",
-                            backNode.FindNodeByPath("bS").GetValue<string>(),
-                            ani switch
-                            {
-                                0 => "back",
-                                1 => "ani",
-                                2 => "spine",
-                                _ => throw new Exception($"unknown back ani={ani} at {backNode.FullPathToFile}"),
-                            },
-                            backNode.FindNodeByPath("no").GetValue<string>()
-                        );
-
-                        object backResource = ani switch
+                    int ani = backNode.FindNodeByPath("ani").GetValueEx<int>(0);
+                    string resourceUrl = string.Format("Map/Back/{0}.img/{1}/{2}",
+                        backNode.FindNodeByPath("bS").GetValue<string>(),
+                        ani switch
                         {
-                            0 => LoadSpriteBase<Sprite>(wzs, resourceUrl, outputDir),
-                            1 => LoadAnimation(wzs, resourceUrl, outputDir),
-                            2 => throw new NotImplementedException("spine is not supported"),
+                            0 => "back",
+                            1 => "ani",
+                            2 => "spine",
                             _ => throw new Exception($"unknown back ani={ani} at {backNode.FullPathToFile}"),
-                        };
+                        },
+                        backNode.FindNodeByPath("no").GetValue<string>()
+                    );
+                    MapBack mapBack = new()
+                    {
+                        Id = int.Parse(backNode.Text),
+                        X = backNode.FindNodeByPath("x").GetValueEx<int>(0),
+                        Y = backNode.FindNodeByPath("y").GetValueEx<int>(0),
+                        Cx = backNode.FindNodeByPath("cx").GetValueEx<int>(0),
+                        Cy = backNode.FindNodeByPath("cy").GetValueEx<int>(0),
+                        Rx = backNode.FindNodeByPath("rx").GetValueEx<int>(0),
+                        Ry = backNode.FindNodeByPath("ry").GetValueEx<int>(0),
+                        Alpha = backNode.FindNodeByPath("a").GetValueEx<int>(0),
+                        Flipx = backNode.FindNodeByPath("f").GetValueEx<int>(0) != 0,
+                        Front = backNode.FindNodeByPath("front").GetValueEx<int>(0) != 0,
+                        Ani = ani,
+                        Type = backNode.FindNodeByPath("type").GetValueEx<int>(0),
+                    };
 
-                        return new MapBack()
-                        {
-                            ID = int.Parse(backNode.Text),
-                            X = backNode.FindNodeByPath("x").GetValueEx<int>(0),
-                            Y = backNode.FindNodeByPath("y").GetValueEx<int>(0),
-                            Cx = backNode.FindNodeByPath("cx").GetValueEx<int>(0),
-                            Cy = backNode.FindNodeByPath("cy").GetValueEx<int>(0),
-                            Rx = backNode.FindNodeByPath("rx").GetValueEx<int>(0),
-                            Ry = backNode.FindNodeByPath("ry").GetValueEx<int>(0),
-                            Alpha = backNode.FindNodeByPath("a").GetValueEx<int>(0),
-                            FlipX = backNode.FindNodeByPath("f").GetValueEx<int>(0) != 0,
-                            Front = backNode.FindNodeByPath("front").GetValueEx<int>(0) != 0,
-                            Ani = ani,
-                            Type = backNode.FindNodeByPath("type").GetValueEx<int>(0),
-                            Resource = backResource,
-                        };
-                    }).ToArray();
+                    switch (ani)
+                    {
+                        case 0:
+                            mapBack.Sprite = LoadSprite(wzs, resourceUrl);
+                            break;
+                        case 1:
+                            mapBack.Frameanimate = LoadAnimation(wzs, resourceUrl);
+                            break;
+                        case 2:
+                            throw new NotImplementedException("spine is not supported");
+                            break;
+                    }
+                    mapImg.Back.Add(mapBack);
                 }
             }
 
 
+
             Wz_Node fhListNode = mapImgNode.FindNodeByPath("foothold");
+            MapFootHold mapFootHold = new();
             if (fhListNode != null)
             {
                 int _layer, _z, _fh;
@@ -153,7 +161,7 @@ class Program
                                 next = fhNode.FindNodeByPath("next"),
                                 piece = fhNode.FindNodeByPath("piece");
 
-                            FootholdPatch patch = new FootholdPatch
+                            FootHold footHold = new FootHold
                             {
                                 X1 = x1.GetValueEx<int>(0),
                                 X2 = x2.GetValueEx<int>(0),
@@ -162,18 +170,15 @@ class Program
                                 Prev = prev.GetValueEx<int>(0),
                                 Next = next.GetValueEx<int>(0),
                                 Piece = piece.GetValueEx<int>(0),
-                                Layer = _layer,
-                                ID = int.Parse(fhNode.Text)
-
                                 // Name = string.Format("foothold_{0}", fhNode.Text)
                             };
                             // Console.Write("");
-                            footholds.Add(patch);
+                            mapFootHold.Foothold.Add(footHold);
+                            // mapFootHold.Add(patch);
                         }
                     }
                 }
             }
-            mapInfo.FootHold = footholds.ToArray();
 
             Wz_Node info = mapImgNode.FindNodeByPath("info");
             if (info != null)
@@ -195,51 +200,43 @@ class Program
                 }
 
                 var mapMarks = mapMark.GetValueEx<string>(null);
-                MapInfo Mapinfo = new MapInfo
+                MapInfo mapInfo = new MapInfo
                 {
-                    VRLeft = left.GetValue<int>(),
-                    VRTop = top.GetValue<int>(),
-                    VRRight = right.GetValue<int>(),
-                    VRBottom = top.GetValue<int>(),
+                    Vrleft = left.GetValue<int>(),
+                    Vrtop = top.GetValue<int>(),
+                    Vrright = right.GetValue<int>(),
+                    Vrbottom = top.GetValue<int>(),
                     Bgm = bgmPath,
                 };
-                mapInfo.Infos = Mapinfo;
+                mapImg.Info = mapInfo;
             }
-            Wz_Node life = mapImgNode.FindNodeByPath("life");
-            if (life != null)
+            Wz_Node lifeRootNode = mapImgNode.FindNodeByPath("life");
+            if (lifeRootNode != null)
             {
-                mapInfo.Lifes = life.Nodes.Select(lifeNode =>
-                     {
-                         return new MapLife()
-                         {
-                             ID = lifeNode.FindNodeByPath("id").GetValueEx<int>(0),
-                             Type = lifeNode.FindNodeByPath("type").GetValue<string>(),
-                             X = lifeNode.FindNodeByPath("x").GetValueEx<int>(0),
-                             Y = lifeNode.FindNodeByPath("y").GetValueEx<int>(0),
-                             Fh = lifeNode.FindNodeByPath("cy").GetValueEx<int>(0),
-                             Cy = lifeNode.FindNodeByPath("rx").GetValueEx<int>(0),
-                             Rx0 = lifeNode.FindNodeByPath("ry").GetValueEx<int>(0),
-                             Rx1 = lifeNode.FindNodeByPath("a").GetValueEx<int>(0),
-                             F = lifeNode.FindNodeByPath("f").GetValueEx<int>(0),
-                         };
-                     }).ToArray();
+                foreach (var lifeNode in lifeRootNode.Nodes)
+                {
+                    MapLife mapLife = new MapLife()
+                    {
+                        Id = lifeNode.FindNodeByPath("id").GetValueEx<int>(0),
+                        Type = lifeNode.FindNodeByPath("type").GetValue<string>(),
+                        X = lifeNode.FindNodeByPath("x").GetValueEx<int>(0),
+                        Y = lifeNode.FindNodeByPath("y").GetValueEx<int>(0),
+                        Fh = lifeNode.FindNodeByPath("cy").GetValueEx<int>(0),
+                        Cy = lifeNode.FindNodeByPath("rx").GetValueEx<int>(0),
+                        Rx0 = lifeNode.FindNodeByPath("ry").GetValueEx<int>(0),
+                        Rx1 = lifeNode.FindNodeByPath("a").GetValueEx<int>(0),
+                        F = lifeNode.FindNodeByPath("f").GetValueEx<int>(0),
+                    };
+                    mapImg.Life.Add(mapLife);
+                }
             }
 
             // Save map manifest file
-            string mapInfoResourceUrl = mapImgNode.FullPathToFile.Replace('\\', '/');
-            string mapInfoJsonFile = Path.ChangeExtension(Path.Combine(outputDir, mapInfoResourceUrl), ".json");
-            string fileDir = Path.GetDirectoryName(mapInfoJsonFile);
-            if (!Directory.Exists(fileDir))
-                Directory.CreateDirectory(fileDir);
-            File.WriteAllText(mapInfoJsonFile, JsonConvert.SerializeObject(mapInfo));
 
-            MapImg mapImg = new MapImg();
-            mapImg.Back.Add(new global::MapBack());
 
-            p.Buf = ByteString.CopyFrom(ResourceList[0]);
             var output = File.Create("john.dat");
 
-            p.WriteTo(output);
+            mapImg.WriteTo(output);
             // p.Buf=ResourceList[0];
 
         }
@@ -249,15 +246,8 @@ class Program
         }
     }
 
-    // You can define other methods, fields, classes and namespaces here
 
-    static T LoadSpriteBase<T>(Wz_Structure wzs, string resourceUrl, string outputBaseDir) where T : Sprite, new()
-    {
-        var pngNode = wzs.WzNode.FindNodeByPath(true, resourceUrl.Split('/')) ?? throw new Exception("Failed to find sprite " + resourceUrl);
-        return LoadSpriteBase<T>(pngNode, outputBaseDir);
-    }
-
-    static T LoadSpriteBase<T>(Wz_Node pngNode, string outputBaseDir) where T : Sprite, new()
+    static Sprite LoadSprite(Wz_Node pngNode)
     {
         // resolve uol
         pngNode = pngNode.ResolveUol();
@@ -265,57 +255,117 @@ class Program
         var linkedPngNode = GetLinkedSourceNode(pngNode) ?? pngNode;
         var png = linkedPngNode.GetValue<Wz_Png>() ?? throw new Exception($"{pngNode.FullPathToFile} is not a PNG node");
         var origin = pngNode.FindNodeByPath("origin").GetValueEx<Wz_Vector>(null);
-        var sprite = new T()
+        var sprite = new Sprite()
         {
             Width = png.Width,
             Height = png.Height,
-            OriginX = origin?.X ?? 0,
-            OriginY = origin?.Y ?? 0,
+            Originx = origin?.X ?? 0,
+            Originy = origin?.Y ?? 0,
             Z = pngNode.FindNodeByPath("z").GetValueEx<int>(0),
-            ResourceUrl = SavePngFile(linkedPngNode, outputBaseDir),
+            Resource = ByteString.CopyFrom(SavePngFile(linkedPngNode)),
         };
-        if (sprite is Frame frame)
-        {
-            frame.Delay = pngNode.FindNodeByPath("delay").GetValueEx<int>(100);
-            frame.A0 = pngNode.FindNodeByPath("a0").GetValueEx<int>(255);
-            frame.A1 = pngNode.FindNodeByPath("a1").GetValueEx<int>(255);
-        }
         return sprite;
     }
 
-    static int SavePngFile(Wz_Node pngNode, string outputBaseDir)
+    static Frame LoadFrame(Wz_Node pngNode)
     {
-        string relativeUrl = pngNode.FullPathToFile.Replace('\\', '/') + ".png";
-        string outputFileName = Path.Combine(outputBaseDir, relativeUrl);
-        string SigBase64 = null;
+        // resolve uol
+        pngNode = pngNode.ResolveUol();
+        // resolve link
+        var linkedPngNode = GetLinkedSourceNode(pngNode) ?? pngNode;
+        var png = linkedPngNode.GetValue<Wz_Png>() ?? throw new Exception($"{pngNode.FullPathToFile} is not a PNG node");
+        var origin = pngNode.FindNodeByPath("origin").GetValueEx<Wz_Vector>(null);
+        var sprite = new Sprite()
+        {
+            Width = png.Width,
+            Height = png.Height,
+            Originx = origin?.X ?? 0,
+            Originy = origin?.Y ?? 0,
+            Z = pngNode.FindNodeByPath("z").GetValueEx<int>(0),
+            Resource = ByteString.CopyFrom(SavePngFile(linkedPngNode)),
+        };
+        Frame frame = new Frame()
+        {
+            Sprite = sprite,
+            Delay = pngNode.FindNodeByPath("delay").GetValueEx<int>(100),
+            A0 = pngNode.FindNodeByPath("a0").GetValueEx<int>(255),
+            A1 = pngNode.FindNodeByPath("a1").GetValueEx<int>(255),
+        };
+        return frame;
+    }
+
+    // You can define other methods, fields, classes and namespaces here
+    static Sprite LoadSprite(Wz_Structure wzs, string resourceUrl)
+    {
+        var pngNode = wzs.WzNode.FindNodeByPath(true, resourceUrl.Split('/')) ?? throw new Exception("Failed to find sprite " + resourceUrl);
+
+        // resolve uol
+        pngNode = pngNode.ResolveUol();
+        // resolve link
+        var linkedPngNode = GetLinkedSourceNode(pngNode) ?? pngNode;
+        var png = linkedPngNode.GetValue<Wz_Png>() ?? throw new Exception($"{pngNode.FullPathToFile} is not a PNG node");
+        var origin = pngNode.FindNodeByPath("origin").GetValueEx<Wz_Vector>(null);
+        var sprite = new Sprite()
+        {
+            Width = png.Width,
+            Height = png.Height,
+            Originx = origin?.X ?? 0,
+            Originy = origin?.Y ?? 0,
+            Z = pngNode.FindNodeByPath("z").GetValueEx<int>(0),
+            Resource = ByteString.CopyFrom(SavePngFile(linkedPngNode)),
+        };
+        return sprite;
+    }
+
+    static Frame LoadFrame(Wz_Structure wzs, string resourceUrl)
+    {
+        var pngNode = wzs.WzNode.FindNodeByPath(true, resourceUrl.Split('/')) ?? throw new Exception("Failed to find sprite " + resourceUrl);
+        // resolve uol
+        pngNode = pngNode.ResolveUol();
+        // resolve link
+        var linkedPngNode = GetLinkedSourceNode(pngNode) ?? pngNode;
+        var png = linkedPngNode.GetValue<Wz_Png>() ?? throw new Exception($"{pngNode.FullPathToFile} is not a PNG node");
+        var origin = pngNode.FindNodeByPath("origin").GetValueEx<Wz_Vector>(null);
+        var sprite = new Sprite()
+        {
+            Width = png.Width,
+            Height = png.Height,
+            Originx = origin?.X ?? 0,
+            Originy = origin?.Y ?? 0,
+            Z = pngNode.FindNodeByPath("z").GetValueEx<int>(0),
+            Resource = ByteString.CopyFrom(SavePngFile(linkedPngNode)),
+        };
+        Frame frame = new Frame()
+        {
+            Sprite = sprite,
+            Delay = pngNode.FindNodeByPath("delay").GetValueEx<int>(100),
+            A0 = pngNode.FindNodeByPath("a0").GetValueEx<int>(255),
+            A1 = pngNode.FindNodeByPath("a1").GetValueEx<int>(255),
+        };
+        return frame;
+    }
+
+    static Byte[] SavePngFile(Wz_Node pngNode)
+    {
+        ;
         using var bitmap = pngNode.GetValue<Wz_Png>().ExtractPng();
         System.IO.MemoryStream ms = new MemoryStream();
         bitmap.Save(ms, ImageFormat.Png);
-        ResourceList.Add(ms.ToArray());
-        return ResourceList.Count;
+        return ms.ToArray();
     }
 
-    static Byte[] GetResource(int i)
-    {
-        return ResourceList[i];
-    }
-
-    static FrameAnimate LoadAnimation(Wz_Structure wzs, string resourceUrl, string outputBaseDir)
+    static FrameAnimate LoadAnimation(Wz_Structure wzs, string resourceUrl)
     {
         var aniNode = wzs.WzNode.FindNodeByPath(true, resourceUrl.Split('/')) ?? throw new Exception("Failed to find ani " + resourceUrl);
-        var frames = new List<Frame>();
+        FrameAnimate frameAnimate = new FrameAnimate();
         for (int f = 0; ; f++)
         {
             var pngNode = aniNode.FindNodeByPath(f.ToString());
             if (pngNode == null) break;
-            var frame = LoadSpriteBase<Frame>(pngNode, outputBaseDir);
-            frames.Add(frame);
+            var frame = LoadFrame(pngNode);
+            frameAnimate.Frames.Add(frame);
         }
-        if (frames.Count == 0) throw new Exception("load 0 frames at " + resourceUrl);
-        return new FrameAnimate()
-        {
-            Frames = frames
-        };
+        return frameAnimate;
     }
 
     static Wz_Node GetLinkedSourceNode(Wz_Node node)
